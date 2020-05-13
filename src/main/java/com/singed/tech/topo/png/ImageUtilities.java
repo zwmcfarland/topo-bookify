@@ -1,5 +1,10 @@
 package com.singed.tech.topo.png;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+
 import javax.imageio.ImageIO;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -47,5 +52,29 @@ public class ImageUtilities {
         rotateOp.filter(image,rotatedImage);
         ImageIO.write(rotatedImage, "png", imageFile);
         return imageFile;
+    }
+
+    private File generatePdfFile(File srcImage) throws IOException {
+        File pdfFile = new File("./parts/", srcImage.getName().replace(".png", ".pdf"));
+        return pdfFile;
+    }
+
+    public File createPDFFromImage(File srcImage)
+            throws IOException
+    {
+        File outputFile = generatePdfFile(srcImage);
+        try (PDDocument doc = new PDDocument())
+        {
+            //we will add the image to the first pag
+            PDImageXObject pdImage = PDImageXObject.createFromFile(srcImage.getAbsolutePath(), doc);
+            doc.addPage(new PDPage());
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(doc, doc.getPage(0), PDPageContentStream.AppendMode.APPEND, true, true)) {
+                float scale = 1f;
+                contentStream.drawImage(pdImage, 20, 20, pdImage.getWidth() * scale, pdImage.getHeight() * scale);
+            }
+            doc.save(outputFile);
+        }
+         return outputFile;
     }
 }

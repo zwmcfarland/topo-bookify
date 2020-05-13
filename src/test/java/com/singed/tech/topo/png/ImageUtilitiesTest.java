@@ -36,4 +36,10 @@ public class ImageUtilitiesTest {
         imgParts[1].delete();
         image.delete();
     }
+
+
+    @Test
+    public void testImageToPDF() throws Exception {
+        this.objUnderTest.createPDFFromImage(new File("parts/MT_Carlton_Lake_20170426_TM_geobottom_90l_.png"));
+    }
 }
